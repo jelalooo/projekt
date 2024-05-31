@@ -1,0 +1,59 @@
+name: Budowanie
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 1' 
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Sprawdzenie repozytorium
+      uses: actions/checkout@v2
+
+    - name: Instalacja Pythona
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Instalacja zależności
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Uruchomienie skryptu instalacyjnego
+      run: .\installResources.ps1
+
+    - name: Budowanie pliku .exe
+      run: pyinstaller --onefile main.py
+
+    - name: Przesyłanie artefaktów
+      uses: actions/upload-artifact@v2
+      with:
+        name: exe-file
+        path: dist/main.exe
+
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Sprawdzenie repozytorium
+      uses: actions/checkout@v2
+
+    - name: Instalacja Pythona
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Instalacja zależności
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Uruchomienie testów
+      run: |
