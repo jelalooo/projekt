@@ -59,3 +59,22 @@ def convert_file(input_file, output_file):
         'yaml': load_yaml,
         'xml': load_xml
     }.get(input_ext)
+
+    save_func = {
+        'json': save_json,
+        'yml': save_yaml,
+        'yaml': save_yaml,
+        'xml': save_xml
+    }.get(output_ext)
+
+    if not load_func or not save_func:
+        print("Nieobsługiwany format pliku.")
+        return
+
+    data = load_func(input_file)
+    save_func(data, output_file)
+
+if __name__ == "__main__":
+    args = parse_args()
+    convert_file(args.input_file, args.output_file)
+    
